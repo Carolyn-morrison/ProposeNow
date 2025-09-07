@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ProposeNow by Long-Term Consultants</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root { --teal-900:#0b343c; --teal-600:#3b6269; --teal-400:#58b4c3; --teal-200:#d5eaea; --bg:#f6fbfb; }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; background: var(--bg); color: var(--teal-900); }
+    .wrap { max-width: 980px; margin: 32px auto; padding: 24px; }
+    .brand { display:flex; align-items:center; gap:16px; padding:16px 20px; background:#fff; border:1px solid var(--teal-200); border-radius:16px; box-shadow:0 6px 24px rgba(0,0,0,.06); }
+    .logo { width:64px; height:64px; border-radius:12px; background:#ffffff; border:1px solid var(--teal-200); display:flex; align-items:center; justify-content:center; color: var(--teal-900); font-weight:800; letter-spacing:.5px; overflow:hidden; }
+    .logo img { width:100%; height:100%; object-fit:contain; display:block; }
+    h1 { margin:0; font-size:22px; line-height:1.2; }
+    .subtitle { font-size:13px; color: var(--teal-600); }
+    .warn { background:#fff4e5; border:1px solid #f7c97b; color:#7a4b00; padding:12px 14px; border-radius:12px; margin:12px 0 0; font-size:13px; display:none; }
+    form { margin-top: 20px; background:white; border:1px solid var(--teal-200); border-radius: 16px; padding: 20px; box-shadow: 0 6px 24px rgba(0,0,0,0.06);}
+    fieldset { border: none; margin: 0; padding: 0; }
+    .grid { display:grid; grid-template-columns: repeat(12, 1fr); gap: 14px; }
+    .col-6 { grid-column: span 6; } .col-4 { grid-column: span 4; } .col-8 { grid-column: span 8; } .col-12 { grid-column: span 12; }
+    label { display:block; font-size: 12px; font-weight:600; color: var(--teal-600); margin-bottom:6px; }
+    input, select, textarea { width:100%; padding: 10px 12px; border: 1px solid var(--teal-200); border-radius: 10px; font-size: 14px; }
+    .radio-row { display:flex; gap:16px; }
+    .radio { display:flex; align-items:center; gap:8px; padding:10px 12px; border:1px solid var(--teal-200); border-radius: 10px; }
+    .actions { display:flex; gap:12px; margin-top: 16px; flex-wrap: wrap; }
+    button { border: none; background: var(--teal-900); color:white; padding: 12px 16px; border-radius: 12px; font-weight:700; cursor:pointer; }
+    button.secondary { background: transparent; color: var(--teal-900); border:1px solid var(--teal-200); }
+    .foot { margin-top: 18px; font-size: 12px; color: var(--teal-600); text-align:center; }
+    .template-hint { background: #ffffff; border:1px dashed var(--teal-400); color: var(--teal-600); padding: 10px 12px; border-radius: 10px; font-size:12px; min-height: 18px;}
+    /* Hide admin/debug UI in production */
+    #selfTestBtn, #inspectBtn, #selfTestOut, #fieldMapOut { display: none !important; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="brand">
+      <div class="logo"><img id="logoImg" src="logo.png" alt="Long-Term Consultants logo"></div>
+      <div>
+        <h1>ProposeNow by Long-Term Consultants <span style="font-weight:600; color:var(--teal-600)"> (in partnership with Allstate)</span></h1>
+        <div class="subtitle">Generate a branded, flat PDF proposal from your selected template — automatically mapped from employee count & proposal type.</div>
+        <div id="envWarn" class="warn">You're opening this file directly as <code>file://</code>. Please run from a web host (Netlify/SharePoint/etc.) so the browser can fetch the templates.</div>
+      </div>
+    </div>
+
+    <form id="proposalForm">
+      <fieldset class="grid">
+        <div class="col-6">
+          <label>Type of Proposal</label>
+          <div class="radio-row" id="proposalType">
+            <label class="radio"><input type="radio" name="type" value="direct" checked> Long-Term Consultants Direct</label>
+            <label class="radio"><input type="radio" name="type" value="partner"> Partner Request</label>
+          </div>
+        </div>
+        <div class="col-6">
+          <label for="employees">Number of Employees</label>
+          <input id="employees" name="employees" type="number" min="1" placeholder="e.g., 75" required>
+        </div>
+
+        <div class="col-6">
+          <label for="preparedBy">Prepared By</label>
+          <input id="preparedBy" name="Prepared By" placeholder="Your name / Long-Term Consultants" required>
+        </div>
+        <div class="col-6">
+          <label for="preparedFor">Prepared For</label>
+          <input id="preparedFor" name="Prepared For" placeholder="Client contact name" required>
+        </div>
+
+        <div class="col-6">
+          <label for="agentName">Agent/Broker Name</label>
+          <input id="agentName" name="Agent/Broker Name" placeholder="Agent or Broker name">
+        </div>
+        <div class="col-6">
+          <label for="agentDetails">Agent/Broker Details</label>
+          <input id="agentDetails" name="Agent/Broker Details" placeholder="Email | Phone | Agency">
+        </div>
+
+        <div class="col-8">
+          <label for="accountName">Account Name (used to name the PDF)</label>
+          <input id="accountName" name="Account Name" placeholder="Acme Manufacturing, Inc." required>
+        </div>
+        <div class="col-4">
+          <label for="eligibleLives">Eligible Lives</label>
+          <input id="eligibleLives" name="Eligible Lives" type="number" min="1" placeholder="e.g., 120">
+        </div>
+
+        <div class="col-4">
+          <label for="sic">SIC</label>
+          <input id="sic" name="SIC" placeholder="e.g., 2834">
+        </div>
+        <div class="col-4">
+          <label for="situsState">Situs State</label>
+          <input id="situsState" name="Situs State" placeholder="e.g., NY">
+        </div>
+        <div class="col-4">
+          <label for="effectiveDate">Effective Date</label>
+          <input id="effectiveDate" name="Effective Date" type="date" required>
+        </div>
+
+        <div class="col-12 template-hint" id="templateHint"></div>
+        <div class="col-12 actions">
+          <button type="button" id="generateBtn" onclick="handleGenerate(event)">Generate Proposal PDF</button>
+          <button type="button" class="secondary" id="resetBtn">Reset</button>
+          <button type="button" class="secondary" id="selfTestBtn">Run Template Self-Test</button>
+          <button type="button" class="secondary" id="inspectBtn">Inspect Fields (selected template)</button>
+        </div>
+        <div class="col-12" id="selfTestOut"></div>
+        <div class="col-12" id="fieldMapOut"></div>
+      </fieldset>
+    </form>
+
+    <div class="foot">© <span id="year"></span> Long-Term Consultants. For internal and partner use only.</div>
+  </div>
+
+  <!-- Primary CDN -->
+  <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+  <script>
+    // Fallback CDN if primary blocked
+    (function ensurePdfLib(){ 
+      if (window.PDFLib) return;
+      var s = document.createElement('script');
+      s.src = 'https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js';
+      s.onload = function(){ console.log('[ProposeNow] Loaded pdf-lib from jsDelivr'); };
+      s.onerror = function(){ console.error('[ProposeNow] Failed to load pdf-lib from both CDNs'); };
+      document.head.appendChild(s);
+    })();
+  </script>
+
+  <script>
+    const templateHint = document.getElementById('templateHint');
+    const formEl = document.getElementById('proposalForm');
+    const resetBtn = document.getElementById('resetBtn');
+    const selfTestBtn = document.getElementById('selfTestBtn');
+    const inspectBtn = document.getElementById('inspectBtn');
+    const selfTestOut = document.getElementById('selfTestOut');
+    const fieldMapOut = document.getElementById('fieldMapOut');
+    document.getElementById('year').textContent = new Date().getFullYear();
+    if (location.protocol === 'file:') document.getElementById('envWarn').style.display = '';
+
+    const TEMPLATES_DIR = './templates/';
+    const TEMPLATE_FILES = {
+      small: { direct: 'LTC_Branded_3-99_Template.pdf',          partner: 'LTC_Branded_3-99_Template_Partner.pdf' },
+      mid:   { direct: 'LTC_Branded_100-249_Template.pdf',        partner: 'LTC_Branded_100-249_Template_Partner.pdf' },
+      large: { direct: 'LTC_Branded_Over250_Template.pdf',        partner: 'LTC_Branded_Over250_Template_Partner.pdf' }
+    };
+
+    function pickBand(employees) {
+      if (employees >= 3 && employees <= 99) return 'small';
+      if (employees >= 100 && employees <= 249) return 'mid';
+      if (employees >= 250) return 'large';
+      throw new Error('Employee count must be 3 or greater.');
+    }
+    function computeTemplatePath(employees, type) {
+      const band = pickBand(Number(employees));
+      const file = TEMPLATE_FILES[band][type];
+      if (!file) throw new Error('Template not found for selection');
+      return /^https?:\/\//i.test(file) ? file : (TEMPLATES_DIR + file);
+    }
+
+    // Long date for fields
+    function toLongDate(iso) {
+      if (!iso) return '';
+      const [y, m, d] = iso.split('-');
+      const monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+      const monthName = monthNames[Math.max(0, Math.min(11, Number(m)-1))] || '';
+      const day = String(Number(d));
+      return monthName && y ? `${monthName} ${day}, ${y}` : '';
+    }
+
+    // Fuzzy field mapping helpers
+    function normalize(s){ return (s||'').toLowerCase().replace(/[^a-z0-9]/g,''); }
+    function buildNameMap(form){
+      const map = {}; const list = [];
+      for (const f of form.getFields()) { const n = f.getName(); list.push(n); map[normalize(n)] = n; }
+      return { map, list };
+    }
+    function findField(nameMap, preferredNames, tokenSets){
+      for(const n of preferredNames){ const k = normalize(n); if(nameMap.map[k]) return nameMap.map[k]; }
+      const normEntries = Object.entries(nameMap.map);
+      for(const tokens of (tokenSets||[])){
+        const want = tokens.map(t=>normalize(t));
+        for(const [norm, actual] of normEntries){
+          if (want.every(t => norm.includes(t))) return actual;
+        }
+      }
+      return null;
+    }
+
+    const SEMANTIC = {
+      preparedBy:    { pref:['Prepared By','PreparedBy'], tokens:[['prepared','by']] },
+      preparedFor:   { pref:['Prepared For','PreparedFor'], tokens:[['prepared','for']] },
+      effective0:    { pref:['Effective Date#0','EffectiveDate#0','Effective Date 0','EffectiveDate0','Effective Date','EffectiveDate'], tokens:[['effective','date','0'],['effective','date']] },
+      effective1:    { pref:['Effective Date#1','EffectiveDate#1','Effective Date 1','EffectiveDate1','Effective Date','EffectiveDate'], tokens:[['effective','date','1'],['effective','date']] },
+      agentName:     { pref:['[Agent/Broker Name]','Agent/Broker Name','Agent Name','Broker Name','Agent_Broker_Name'], tokens:[['agent','name'],['broker','name'],['agentbroker','name']] },
+      agentDetails:  { pref:['Agent/Partner Details','Agent/Broker Details','Agent Details','Broker Details','Agent Info','Agent Contact','Broker Contact','Agency Details','Agent_Broker_Details'], tokens:[['agent','details'],['broker','details'],['agent','contact'],['broker','contact'],['agent','info'],['agency','details'],['agentpartner','details']] },
+      accountName:   { pref:['Account Name','AccountName'], tokens:[['account','name']] },
+      eligibleLives: { pref:['Eligible Lives','EligibleLives'], tokens:[['eligible','lives'],['eligible','employees']] },
+      sic:           { pref:['SIC'], tokens:[['sic']] },
+      situsState:    { pref:['Situs State','SitusState','State of Situs','Situs'], tokens:[['situs','state'],['state','situs'],['situs']] }
+    };
+
+    function currentSelectionHint() {
+      const fd = new FormData(formEl);
+      const type = fd.get('type') || 'direct';
+      const employees = Number(fd.get('employees') || 0);
+      if (!employees || employees < 3) { templateHint.textContent = ''; return; }
+      try {
+        const path = computeTemplatePath(employees, type);
+        templateHint.innerHTML = 'Selected: <strong>' + path.replace(TEMPLATES_DIR, '') + '</strong>';
+      } catch (e) { templateHint.textContent = e.message; }
+    }
+    formEl.addEventListener('input', currentSelectionHint);
+
+    async function fetchTemplateBytes(path) {
+      try {
+        const res = await fetch(path, { cache: 'no-store' });
+        if (!res.ok) throw new Error('HTTP ' + res.status + ' fetching ' + path);
+        return new Uint8Array(await res.arrayBuffer());
+      } catch (e) {
+        const hint = location.protocol === 'file:' ? '\\nHint: Running from file://. Use a web host so fetch() can access PDFs.' : '';
+        throw new Error('Network error fetching ' + path + ': ' + e.message + hint);
+      }
+    }
+
+    async function fillAndDownload(path, data, outName) {
+      if (typeof PDFLib === 'undefined') throw new Error('PDF engine (pdf-lib) not loaded.');
+      const { PDFDocument, StandardFonts, rgb } = PDFLib;
+      const bytes = await fetchTemplateBytes(path);
+      const pdfDoc = await PDFDocument.load(bytes);
+      const form = pdfDoc.getForm();
+
+      const fields = form.getFields();
+      if (!fields || fields.length === 0) throw new Error('This PDF has no AcroForm fields. If your template is an XFA (LiveCycle) form, convert to a standard AcroForm.');
+
+      const nameMap = buildNameMap(form);
+      const _filled = new Set();
+      function setBySemantic(semanticKey, value){
+        const cfg = SEMANTIC[semanticKey];
+        const fieldName = findField(nameMap, cfg.pref, cfg.tokens);
+        if (fieldName && !_filled.has(fieldName)) {
+          try { form.getTextField(fieldName).setText(String(value ?? '')); _filled.add(fieldName); return true; } catch(e){}
+        }
+        return false;
+      }
+
+      // Fill fields (Effective Date supports single-field templates)
+      setBySemantic('preparedBy', data.preparedBy);
+      setBySemantic('preparedFor', data.preparedFor);
+      const eff0 = setBySemantic('effective0', data.effectiveDate);
+      const eff1 = setBySemantic('effective1', data.effectiveDate);
+      if (!eff0 && !eff1) {
+        const tokens = ['effective','date'];
+        for (const f of form.getFields()) {
+          const n = f.getName(); const norm = n.toLowerCase().replace(/[^a-z0-9]/g,'');
+          if (tokens.every(t => norm.includes(t)) && !_filled.has(n)) { try { form.getTextField(n).setText(String(data.effectiveDate||'')); _filled.add(n); break; } catch(e){} }
+        }
+      }
+      setBySemantic('agentName', data.agentName);
+      setBySemantic('agentDetails', data.agentDetails);
+      setBySemantic('accountName', data.accountName);
+      setBySemantic('eligibleLives', data.eligibleLives);
+      setBySemantic('sic', data.sic);
+      setBySemantic('situsState', data.situsState);
+
+      form.flatten();
+
+      // Footer date on pages 2..10 (bottom-left)
+      try {
+        const pages = pdfDoc.getPages();
+        if (pages.length > 1) {
+          const now = new Date();
+          const mm = String(now.getMonth() + 1).padStart(2, '0');
+          const dd = String(now.getDate()).padStart(2, '0');
+          const yyyy = String(now.getFullYear());
+          const dateText = `${mm}/${dd}/${yyyy}`;
+          const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
+          const size = 10, margin = 24;
+          const end = Math.min(pages.length, 10);
+          for (let i = 1; i < end; i++) {
+            pages[i].drawText(dateText, { x: margin, y: margin, size, font, color: rgb(0.1,0.1,0.1), opacity: 0.9 });
+          }
+        }
+      } catch (e) {}
+
+      const pdfBytes = await pdfDoc.save();
+      const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = `${outName} Proposal.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(link.href);
+    }
+
+    async function handleGenerate(e) {
+      e?.preventDefault?.();
+      try {
+        const fd = new FormData(formEl);
+        const type = fd.get('type') || 'direct';
+        const employees = Number(fd.get('employees'));
+        if (!employees || employees < 3) return alert('Please enter a valid employee count (minimum 3).');
+
+        const path = computeTemplatePath(employees, type);
+        const accountName = (fd.get('Account Name') || '').toString().trim();
+        if (!accountName) return alert('Account Name is required.');
+
+        const data = {
+          preparedBy: fd.get('Prepared By') || '',
+          preparedFor: fd.get('Prepared For') || '',
+          effectiveDate: fd.get('Effective Date') ? toLongDate(fd.get('Effective Date')) : '',
+          agentName: fd.get('Agent/Broker Name') || '',
+          agentDetails: fd.get('Agent/Broker Details') || '',
+          accountName,
+          eligibleLives: fd.get('Eligible Lives') || '',
+          sic: fd.get('SIC') || '',
+          situsState: fd.get('Situs State') || ''
+        };
+
+        templateHint.innerHTML = 'Generating from <strong>' + path.replace(TEMPLATES_DIR, '') + '</strong>…';
+        await fillAndDownload(path, data, accountName);
+        templateHint.innerHTML = 'Done! Downloaded: <strong>' + accountName + ' Proposal.pdf</strong>';
+      } catch (err) {
+        console.error('[ProposeNow] Generate error:', err);
+        alert('Error generating PDF: ' + err.message + '\\nOpen the console for details (Ctrl/Cmd+Shift+J).');
+        templateHint.textContent = 'Error: ' + err.message;
+      }
+    }
+    window.handleGenerate = handleGenerate;
+    document.getElementById('generateBtn')?.addEventListener('click', handleGenerate);
+
+    // Self-test for template reachability (kept but hidden)
+    selfTestBtn?.addEventListener('click', async () => {
+      if (!selfTestOut) return;
+      selfTestOut.style.display = '';
+      selfTestOut.innerHTML = 'Testing access to templates in <code>' + TEMPLATES_DIR + '</code>…';
+      const tests = [
+        TEMPLATE_FILES.small.direct,
+        TEMPLATE_FILES.small.partner,
+        TEMPLATE_FILES.mid.direct,
+        TEMPLATE_FILES.mid.partner,
+        TEMPLATE_FILES.large.direct,
+        TEMPLATE_FILES.large.partner
+      ].map(f => (/^https?:\/\//i.test(f) ? f : (TEMPLATES_DIR + f)));
+      const labels = ['3-99 Direct', '3-99 Partner', '100-249 Direct', '100-249 Partner', 'Over 250 Direct', 'Over 250 Partner'];
+      const lines = [];
+      for (let i = 0; i < tests.length; i++) {
+        const url = tests[i];
+        try { await fetchTemplateBytes(url); lines.push('✅ <span style="color:#116b3b;font-weight:600">OK</span> ' + labels[i] + ' — ' + url); }
+        catch (e) { lines.push('❌ <span style="color:#a61b1b;font-weight:600">FAIL</span> ' + labels[i] + ' — ' + e.message + '<br><code>' + url + '</code>'); }
+      }
+      selfTestOut.innerHTML = lines.join('<br>');
+    });
+
+    // Field Inspector (kept but hidden)
+    inspectBtn?.addEventListener('click', async () => {
+      try {
+        const type = (new FormData(formEl)).get('type') || 'direct';
+        const employees = Number(document.getElementById('employees').value);
+        if (!employees || employees < 3) return alert('Enter employees ≥ 3 first.');
+        const path = computeTemplatePath(employees, type);
+        const { PDFDocument } = PDFLib;
+        const bytes = await fetchTemplateBytes(path);
+        const pdfDoc = await PDFDocument.load(bytes);
+        const form = pdfDoc.getForm();
+        const { map, list } = buildNameMap(form);
+        const rows = [];
+        rows.push('<strong>Fields found in template:</strong>');
+        list.forEach(n => rows.push('<code>' + n + '</code>'));
+        rows.push('<br><strong>Mapping guesses:</strong>');
+        for (const [key, cfg] of Object.entries(SEMANTIC)) {
+          const found = findField({map}, cfg.pref, cfg.tokens);
+          rows.push(key + ' → ' + (found ? ('<code>' + found + '</code>') : '<em>not found</em>'));
+        }
+        if (fieldMapOut) { fieldMapOut.style.display = ''; fieldMapOut.innerHTML = rows.join('<br>'); }
+      } catch (e) {
+        alert('Inspector error: ' + e.message);
+      }
+    });
+
+    // Initial hint clear
+    templateHint.textContent = '';
+  </script>
+</body>
+</html>
